@@ -21,7 +21,10 @@ int64_t ticks_blocked;
 > > including the effects of the timer interrupt handler.
 
 答：  
+<<<<<<< HEAD
 ![替代文本](img\忙等待.png)  
+=======
+>>>>>>> c013e31258a9b29c52d340860f98a93edde9402b
 当执行 timer_sleep()函数后，直接调用 thread_sleep()函数，在此函数中先初始化线程的属性 ticks_blocked，记录下线程需要睡眠的时间+从系统启动到目前的时间，之后在关中断的情况下将睡眠线程睡眠时间顺序
 从小到大插入阻塞队列，然后将线程阻塞，最后开中断。在中断处理程序中，直接调用 thread_wakeup()函数，通过检测从系统启动到目前的时间是否大于线程的 ticks_blocked 时间来判断是否唤醒线程，如果唤醒则
 在关中断的情况下将线程移出阻塞队列，并且将其 unblock。
@@ -32,7 +35,10 @@ int64_t ticks_blocked;
 > > the timer interrupt handler?
 
 答：  
+<<<<<<< HEAD
 ![替代文本](img\忙等待改进.png)  
+=======
+>>>>>>> c013e31258a9b29c52d340860f98a93edde9402b
 因为被阻塞的线程状态被设置为 THREAD_BLOCKED，同时我们设置了一个阻塞队列，而且阻塞队列是按照阻塞时间从小到大排序的，所以在中断处理程序中只会遍历前几个拥有最短睡眠时间的线程，
 之前需要遍历目前系统中的所有线程，我们的方法大大缩短了中断处理程序的时间花费。
 
@@ -44,7 +50,10 @@ int64_t ticks_blocked;
 > > timer_sleep() simultaneously?
 
 答：
+<<<<<<< HEAD
 
+=======
+>>>>>>> c013e31258a9b29c52d340860f98a93edde9402b
 old_level = intr_disable();
 list_insert_ordered(&sleep_list, &cur->elem, sleep_ticks_less, NULL);
 thread_block();
@@ -100,7 +109,11 @@ int priority; //锁的优先级
 
 答:
 
+<<<<<<< HEAD
 ![替代文本](img\优先级捐赠.png)
+=======
+![替代文本](优先级捐赠.png)
+>>>>>>> c013e31258a9b29c52d340860f98a93edde9402b
 
 |表示拥有，/或者\表示等待。
 在上述图中，Thread5 拥有（holder）Lock1，Thread6 拥有（holder）Lock2，Thread8 拥有（holder）Lock3 和 Lock4。
@@ -126,7 +139,10 @@ lock_update_priority 实现锁的优先级恢复。thread_set_priority 保证线
 > > causes a priority donation. How is nested donation handled?
 
 答：  
+<<<<<<< HEAD
 ![替代文本](img\优先级捐赠情况展示.png)  
+=======
+>>>>>>> c013e31258a9b29c52d340860f98a93edde9402b
 当我们调用到 lock_acquire()函数时，首先要禁用中断，再执行后续获取锁的步骤。如果有某个线程拥有此把锁，则我们需要将当前线程放到等待这把锁的队列中去，然后设置当前线程的 lock_waiting 为这把锁。
 之后就开始嵌套捐赠优先级，这样可以使当前线程尽快获得此把锁。在嵌套捐赠优先级中，我们首先判断当前线程的优先级是否比等待的锁的优先级高，如果高那么先给锁捐赠线程的高优先级，接着判断当前锁的
 优先级（其实已经是最初的线程的优先级了）是否大于其拥有者拥有的锁中的最高优先级，如果是则给拥有者拥有的锁中的优先级捐赠最初线程的高优先级，最后判断当前锁的优先级（也是最初的线程的优先级）是否
@@ -196,7 +212,11 @@ static fixed_t load_avg; //全局变量 load_avg
 > > thread after each given number of timer ticks:
 
 答：  
+<<<<<<< HEAD
 ![替代文本](img\高级调度.png)
+=======
+![替代文本](高级调度.png)
+>>>>>>> c013e31258a9b29c52d340860f98a93edde9402b
 
 #### QUESTION C3:
 
@@ -268,7 +288,10 @@ priority，在我们的程序中也是这样的。
 > > How do you avoid overflowing the stack page?
 
 答：  
+<<<<<<< HEAD
 ![替代文本](img\参数传递.png)  
+=======
+>>>>>>> c013e31258a9b29c52d340860f98a93edde9402b
 在参数解析中，我们只需要在 process_excute()和 start_process()函数中使用 strtok_r()函数按照空格将文件名和之后的参数分开即可，因为一个命令第一个参数都是文件名，之后的参数都是一些功能选项。
 我们将解析后的文件名传入线程作为线程名，参数（包括线程名）压入系统栈使可执行文件可以正确读取，就完成参数的传递。
 我们在将参数压入系统栈的时候，要从右到左进行压入，也就是先压入命令中的最后一个参数，文件名这个参数作为位于最低地址的一个参数，这样就能够保证参数的顺序是正确的。通过从 PHYS_BASE 处向下
@@ -281,10 +304,16 @@ priority，在我们的程序中也是这样的。
 > > Why does Pintos implement strtok_r() but not strtok()?
 
 答：  
+<<<<<<< HEAD
 因为 strtok_r()比 strtok()在线程上更加具有安全性。strtok_r 函数是 strtok 函数的可重入版本。strtok 函数在提取字符串时使用了静态缓冲区，一个字符串被分离过程中
 的一些局部变量被存储在静态缓冲区中，此时如果包含 strtok 函数程序被其他进程使用，那么静态缓冲区内的局部变量会混乱，因此，它是线程不安全的。而对于 strtok_r
 函数，其没有静态缓冲区，每个线程要分割的字符串局部变量存储在自己的数据区内，这样就将包含 strtok_r 函数的代码变为了纯代码。所以为了保证线程的安全，在 pintos
 中使用了 strtok_r()函数。
+=======
+因为 strtok_r()比 strtok()在线程上更加具有安全性。strtok_r 函数是 strtok 函数的可重入版本。strtok_r()函数中的 char \**saveptr 参数是一个指向 char *的指针变量，
+用来在 strtok_r 内部保存切分时的上下文，以应对连续调用分解相同源字符串。strtok 函数在提取字符串时使用了静态缓冲区，因此，它是线程不安全的。所以为了保证
+线程的安全，在 pintos 中使用了 strtok_r()函数。
+>>>>>>> c013e31258a9b29c52d340860f98a93edde9402b
 
 #### QUESTION A4:
 
