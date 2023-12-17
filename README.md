@@ -31,8 +31,7 @@ int64_t ticks_blocked;
 > > What steps are taken to minimize the amount of time spent in
 > > the timer interrupt handler?
 
-答：  
-![替代文本](忙等待改进.png)  
+答：   
 因为被阻塞的线程状态被设置为 THREAD_BLOCKED，同时我们设置了一个阻塞队列，而且阻塞队列是按照阻塞时间从小到大排序的，所以在中断处理程序中只会遍历前几个拥有最短睡眠时间的线程，
 之前需要遍历目前系统中的所有线程，我们的方法大大缩短了中断处理程序的时间花费。
 
